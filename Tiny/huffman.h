@@ -14,10 +14,10 @@ struct Node {
     bool isLeaf() { return !left && !right; }
 };
 
-Node* compress(std::ifstream* file, std::ofstream* outputFile);
-Node* decompress(std::ifstream* file, std::ofstream* output);
+void compress(std::ifstream* file, std::ofstream* outputFile);
+void decompress(std::ifstream* file, std::ofstream* output);
 
-void free_tree(Node* root);
+void free_tree(Node* node);
 void encode_tree(Node* node, BitWriter* writter);
 void create_codes(Node* node, std::map<char, std::vector<bool>>& codes, std::vector<bool> code = {});
 int find_smallest_index(std::vector<Node*> nodes);

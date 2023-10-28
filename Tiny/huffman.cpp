@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Node* compress(ifstream* file, ofstream* outputFile) {
+void compress(ifstream* file, ofstream* outputFile) {
 
     BitWriter* writter = new BitWriter(outputFile);
     char c;
@@ -34,29 +34,32 @@ Node* compress(ifstream* file, ofstream* outputFile) {
         }
     }
 
-    return root;
+    free_tree(root);
+    delete writter;
 }
 
-Node* decompress(ifstream* file, ofstream* output) {
+void decompress(ifstream* file, ofstream* output) {
     BitReader* reader = new BitReader(file);
 
     while (reader->readBit());
 
     Node* root = decode_tree(reader);
-
     Node* currNode = root;
-    //stringstream stream;
+    
     while (reader->canRead()) {
-        bool bit = reader->readBit();
-        currNode = bit ? currNode->right : currNode->left;
+        
+        currNode = reader->readBit() 
+            ? currNode->right 
+            : currNode->left;
+
         if (currNode->isLeaf()) {
             output->put(currNode->character);
-            //stream << currNode->character;
             currNode = root;
         }
     }
-    //*output << stream.str();
-    return root;
+
+    free_tree(root);
+    delete reader;
 }
 
 vector<bool> addBit(const vector<bool>& bits, bool bit) {
@@ -140,6 +143,12 @@ Node* decode_tree(BitReader* bitReader) {
     return new Node{ NULL, 0, left, right };
 }
 
-void free_tree(Node* root) {
-    //TODO
+void free_tree(Node* node) {
+    if (node == nullptr)
+        return;
+    
+    free_tree(node->left);
+    free_tree(node->right);
+
+    delete node;
 }
