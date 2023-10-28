@@ -17,9 +17,10 @@ struct Node {
 Node* compress(std::ifstream* file, std::ofstream* outputFile);
 Node* decompress(std::ifstream* file, std::ofstream* output);
 
-void encodeTree(Node* node, BitWriter* writter);
-void createCodes(Node* node, std::map<char, std::vector<bool>>& codes, std::vector<bool> code = {});
-int findSmallestIndex(std::vector<Node*> nodes);
-Node* createTree(std::map<char, int>& frequencies);
-int getPadding(std::map<char, int> frequencies, std::map<char, std::vector<bool>> codes);
-Node* decodeTree(BitReader* bitReader);
+void free_tree(Node* root);
+void encode_tree(Node* node, BitWriter* writter);
+void create_codes(Node* node, std::map<char, std::vector<bool>>& codes, std::vector<bool> code = {});
+int find_smallest_index(std::vector<Node*> nodes);
+Node* create_tree(std::map<char, int>& frequencies);
+int get_padding(std::map<char, int> frequencies, std::map<char, std::vector<bool>> codes);
+Node* decode_tree(BitReader* bitReader);

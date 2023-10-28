@@ -12,18 +12,18 @@ Node* compress(ifstream* file, ofstream* outputFile) {
         frequencies[c]++;
     }
 
-    auto root = createTree(frequencies);
+    auto root = create_tree(frequencies);
 
     map<char, vector<bool>> codes;
-    createCodes(root, codes);
+    create_codes(root, codes);
 
-    int padding = getPadding(frequencies, codes);
+    int padding = get_padding(frequencies, codes);
     for (size_t i = 0; i < padding; i++) {
         writter->writeBit(1);
     }
     writter->writeBit(0);
 
-    encodeTree(root, writter);
+    encode_tree(root, writter);
 
     file->clear();
     file->seekg(0, ios::beg);
@@ -42,7 +42,7 @@ Node* decompress(ifstream* file, ofstream* output) {
 
     while (reader->readBit());
 
-    Node* root = decodeTree(reader);
+    Node* root = decode_tree(reader);
 
     Node* currNode = root;
     //stringstream stream;
@@ -65,23 +65,23 @@ vector<bool> addBit(const vector<bool>& bits, bool bit) {
     return result;
 }
 
-void createCodes(Node* node, map<char, vector<bool>>& codes, vector<bool> code) {
+void create_codes(Node* node, map<char, vector<bool>>& codes, vector<bool> code) {
     if (node) {
         if (node->isLeaf()) {
             codes[node->character] = code;
             return;
         }
-        createCodes(node->left, codes, addBit(code, 0));
-        createCodes(node->right, codes, addBit(code, 1));
+        create_codes(node->left, codes, addBit(code, 0));
+        create_codes(node->right, codes, addBit(code, 1));
     }
 }
 
-void encodeTree(Node* node, BitWriter* writter) {
+void encode_tree(Node* node, BitWriter* writter) {
     if (node) {
         if (!node->isLeaf()) {
             writter->writeBit(0);
-            encodeTree(node->left, writter);
-            encodeTree(node->right, writter);
+            encode_tree(node->left, writter);
+            encode_tree(node->right, writter);
         }
         else
         {
@@ -91,7 +91,7 @@ void encodeTree(Node* node, BitWriter* writter) {
     }
 }
 
-int findSmallestIndex(vector<Node*> nodes) {
+int find_smallest_index(vector<Node*> nodes) {
     int minIndex = 0;
     for (size_t i = 0; i < nodes.size(); i++)
     {
@@ -101,7 +101,7 @@ int findSmallestIndex(vector<Node*> nodes) {
     return minIndex;
 }
 
-Node* createTree(map<char, int>& frequencies) {
+Node* create_tree(map<char, int>& frequencies) {
 
     vector<Node*> nodes;
     for (const auto& el : frequencies) {
@@ -109,11 +109,11 @@ Node* createTree(map<char, int>& frequencies) {
     }
 
     while (nodes.size() > 1) {
-        int leftIndex = findSmallestIndex(nodes);
+        int leftIndex = find_smallest_index(nodes);
         auto left = nodes[leftIndex];
         nodes.erase(nodes.begin() + leftIndex);
 
-        int rightIndex = findSmallestIndex(nodes);
+        int rightIndex = find_smallest_index(nodes);
         auto right = nodes[rightIndex];
         nodes.erase(nodes.begin() + rightIndex);
 
@@ -123,7 +123,7 @@ Node* createTree(map<char, int>& frequencies) {
     return nodes[0];
 }
 
-int getPadding(map<char, int> frequencies, map<char, vector<bool>> codes) {
+int get_padding(map<char, int> frequencies, map<char, vector<bool>> codes) {
     int totalBits = 10 * frequencies.size() - 1;
     for (const auto& el : frequencies)
         totalBits += el.second * codes[el.first].size();
@@ -131,11 +131,15 @@ int getPadding(map<char, int> frequencies, map<char, vector<bool>> codes) {
     return (totalBits + 7) / 8 * 8 - totalBits;
 }
 
-Node* decodeTree(BitReader* bitReader) {
+Node* decode_tree(BitReader* bitReader) {
     if (bitReader->readBit()) {
         return new Node{ (char)bitReader->readByte() };
     }
-    Node* left = decodeTree(bitReader);
-    Node* right = decodeTree(bitReader);
+    Node* left = decode_tree(bitReader);
+    Node* right = decode_tree(bitReader);
     return new Node{ NULL, 0, left, right };
+}
+
+void free_tree(Node* root) {
+    //TODO
 }
