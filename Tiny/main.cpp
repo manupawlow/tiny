@@ -14,7 +14,22 @@ string rename_file_path(const string& path, const string& newExtension, const st
     return newPath;
 }
 
+bool endsWith(const std::string& mainString, const std::string& ending) {
+    if (mainString.length() >= ending.length()) {
+        std::string extractedEnding = mainString.substr(mainString.length() - ending.length());
+        return (extractedEnding == ending);
+    }
+    else {
+        return false;
+    }
+}
+
 int decompress_step(string input_filename) {
+    if (!endsWith(input_filename, ".tiny")) {
+        cerr << "[ERROR] Could not decompress a file that`s not has a .tiny extension";
+        return 1;
+    }
+
     ifstream input(input_filename, ios::binary);
     if (!input.is_open()) {
         cerr << "[ERROR] Could not open file " << input_filename;
