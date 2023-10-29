@@ -24,7 +24,7 @@ bool endsWith(const std::string& mainString, const std::string& ending) {
     }
 }
 
-int decompress_step(string input_filename) {
+int decompress_step(string input_filename, string output_extension) {
     if (!endsWith(input_filename, ".tiny")) {
         cerr << "[ERROR] Could not decompress a file that`s not has a .tiny extension";
         return 1;
@@ -36,7 +36,7 @@ int decompress_step(string input_filename) {
         return 1;
     }
 
-    string output_filename = rename_file_path(input_filename, "txt", " (untiny)");
+    string output_filename = rename_file_path(input_filename, output_extension, " (untiny)");
     ofstream output = ofstream(output_filename);
     if (!output.is_open()) {
         cerr << "[ERROR] Could not create file " << output_filename;
@@ -79,17 +79,16 @@ int compress_step(string input_filename) {
 
 int main(int argc, char* argv[]) {
 
-    if (argc < 4 || strcmp(argv[1], "tiny") != 0) {
-        cerr << "[ERROR] Invalid params, correct use: tiny <filename> [c|compress|d|decompress] " << endl;
-        return 1;
-    }
+    if (argc < 4 || strcmp(argv[1], "tiny") != 0)
+        goto invalid_params_error;
 
     if (strcmp(argv[3], "c") == 0 || strcmp(argv[3], "compress") == 0)
         return compress_step(argv[2]);
 
     if (strcmp(argv[3], "d") == 0 || strcmp(argv[3], "decompress") == 0)
-        return decompress_step(argv[2]);
+        return decompress_step(argv[2], argc >= 4 ? argv[4] : "txt");
 
-    cerr << "[ERROR] Invalid params, correct use: tiny <filename> [c|compress|d|decompress] " << endl;
+invalid_params_error:
+    cerr << "[ERROR] Invalid params, correct use: tiny <filename> [compress|decompress] [extension]" << endl;
     return 1;
 }

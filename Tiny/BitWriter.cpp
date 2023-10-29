@@ -1,10 +1,8 @@
 #include "BitWriter.h"
-#include <iostream>
 
 BitWriter::BitWriter(std::ofstream* file) : file(file) {}
 
 void BitWriter::writeBit(int bit) {
-    //std::cout << (bit ? "1" : "0");
     buffer = buffer | (bit << (7 - currIndex));
     indexCount++;
     if (++currIndex == 8) {

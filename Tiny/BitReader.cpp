@@ -1,10 +1,7 @@
 #include "BitReader.h"
-#include <iostream>
-#include <iomanip>
 
 BitReader::BitReader(std::ifstream* file) : file(file) {
     file->get(currByte);
-    //std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(static_cast<unsigned char>(currByte)) << " ";
 }
 
 bool BitReader::canRead() {
@@ -19,11 +16,7 @@ bool BitReader::readBit(bool peek) {
         if (!file->get(currByte)) {
             eof = true;
         }
-        bool e = file->eof();
-        //std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(static_cast<unsigned char>(currByte)) << " ";
     }
-    //std::cout << (bit ? "1" : "0");
-
     return bit;
 }
 
